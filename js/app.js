@@ -1,9 +1,10 @@
 // Enemies that the player must avoid
 class Enemy {
-    constructor() {
+    constructor(xInitial = 0, yInitial = 0, speedInitial = 1) {
         // Location on screen
-        this.x = 0;
-        this.y = 141; // 166 minus 25 centers the sprite visually
+        this.x = xInitial - 101;
+        this.y = yInitial + ((83 / 3) * 2);
+        this.speed = speedInitial;
 
         // Assign image to enemy sprite
         this.sprite = 'images/enemy-bug.png';
@@ -16,7 +17,8 @@ class Enemy {
 
     // Update enemy position as location values change
     update(dt) {
-        // Update position based on movement*dt
+        if (this.x < 505) {this.x += 202 * this.speed * dt;}
+        else {this.x = -101;}
     }
 }
 
@@ -25,7 +27,7 @@ class Hero {
     constructor(heroType) {
         // Location on screen
         this.x = 202;
-        this.y = 375; // 415 minus 40 centers the sprite visually
+        this.y = 415 - (83 / 3);
 
         // Game stats
         this.health = 1;
@@ -56,8 +58,10 @@ class Hero {
 
 // Instantiate actors
 const allEnemies = [];
-const enemy1 = new Enemy();
-allEnemies.push(enemy1);
+const enemy1 = new Enemy(0, 0, 2);
+const enemy2 = new Enemy(0, 83, 3);
+const enemy3 = new Enemy(0, 166);
+allEnemies.push(enemy1, enemy2, enemy3);
 
 const player = new Hero();
 
