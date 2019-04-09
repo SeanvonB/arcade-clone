@@ -7,7 +7,7 @@ class Enemy {
     constructor(initialY = 1, speed = 1) {
         // Location on screen
         this.x = 0 - tileX;
-        this.y = (tileY * initialY) - (tileY / 2.5);
+        this.y = (tileY * initialY) - (tileY / 2);
         this.speed = speed;
 
         // Assign image to enemy sprite
@@ -31,7 +31,7 @@ class Hero {
     constructor() {
         // Location on screen
         this.initialX = tileX * 2;
-        this.initialY = (tileY * 5) - (tileY / 2.5);
+        this.initialY = (tileY * 5) - (tileY / 2);
         this.x = this.initialX;
         this.y = this.initialY;
 
@@ -55,9 +55,17 @@ class Hero {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 
-    // Update player position as location values change
+    // Update player collision and status checks
     update(dt) {
-        // Update position based on movement*dt
+        // Check enemy collision
+        for (let enemy of allEnemies) {
+            if (enemy.y === this.y &&
+            (enemy.x + (tileX / 2)) > this.x &&
+            (this.x + (tileX / 2)) > enemy.x) {
+                this.x = this.initialX;
+                this.y = this.initialY;
+            }
+        }
     }
 }
 
