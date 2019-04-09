@@ -79,7 +79,11 @@ document.addEventListener('keyup', function(e) {
         37: 'left',
         38: 'up',
         39: 'right',
-        40: 'down'
+        40: 'down',
+        65: "left",
+        68: "right",
+        83: "down",
+        87: "up"
     };
 
     player.handleInput(allowedKeys[e.keyCode]);
