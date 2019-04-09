@@ -1,10 +1,14 @@
+// Global measurement variables
+const tileX = 101;
+const tileY = 83;
+
 // Enemies that the player must avoid
 class Enemy {
-    constructor(xInitial = 0, yInitial = 0, speedInitial = 1) {
+    constructor(initialY = 1, speed = 1) {
         // Location on screen
-        this.x = xInitial - 101;
-        this.y = yInitial + ((83 / 3) * 2);
-        this.speed = speedInitial;
+        this.x = 0 - tileX;
+        this.y = (tileY * initialY) - (tileY / 2.5);
+        this.speed = speed;
 
         // Assign image to enemy sprite
         this.sprite = 'images/enemy-bug.png';
@@ -17,17 +21,19 @@ class Enemy {
 
     // Update enemy position as location values change
     update(dt) {
-        if (this.x < 505) {this.x += 202 * this.speed * dt;}
-        else {this.x = -101;}
+        if (this.x < tileX * 5) {this.x += tileX * 2 * this.speed * dt;}
+        else {this.x = 0 - tileX;}
     }
 }
 
 // Hero who the player controls
 class Hero {
-    constructor(heroType) {
+    constructor() {
         // Location on screen
-        this.x = 202;
-        this.y = 415 - (83 / 3);
+        this.initialX = tileX * 2;
+        this.initialY = (tileY * 5) - (tileY / 2.5);
+        this.x = this.initialX;
+        this.y = this.initialY;
 
         // Game stats
         this.health = 1;
@@ -38,10 +44,10 @@ class Hero {
 
     // Change sprite location based on player inputs
     handleInput(inputKey) {
-        if (inputKey === "left" && this.x > 0) {this.x -= 101;}
-        else if (inputKey === "up" && this.y > 0) {this.y -= 83;}
-        else if (inputKey === "right" && this.x < 404) {this.x += 101;}
-        else if (inputKey === "down" && this.y < 375) {this.y += 83;}
+        if (inputKey === "left" && this.x > 0) {this.x -= tileX;}
+        else if (inputKey === "up" && this.y > 0) {this.y -= tileY;}
+        else if (inputKey === "right" && this.x < (tileX * 4)) {this.x += tileX;}
+        else if (inputKey === "down" && this.y < this.initialY) {this.y += tileY;}
     }
 
     // Draw player sprite on screen
@@ -58,9 +64,9 @@ class Hero {
 
 // Instantiate actors
 const allEnemies = [];
-const enemy1 = new Enemy(0, 0, 2);
-const enemy2 = new Enemy(0, 83, 3);
-const enemy3 = new Enemy(0, 166);
+const enemy1 = new Enemy(1, 2);
+const enemy2 = new Enemy(2, 3);
+const enemy3 = new Enemy(3, 1);
 allEnemies.push(enemy1, enemy2, enemy3);
 
 const player = new Hero();
