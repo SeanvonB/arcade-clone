@@ -1,6 +1,32 @@
 // Global measurement variables
 const tileX = 101;
 const tileY = 83;
+let isPaused = false;
+
+// Global pause functions
+function pause() {
+    for (let enemy in allEnemies) {
+        enemy.pause = true;
+    }
+    player.pause = true;
+    isPaused = true;
+}
+
+function pauseToggle(inputKey) {
+    if (inputKey === "pause" && !isPaused) {
+        pause();
+    } else if (inputKey === "pause" && isPaused) {
+        unpause();
+    } 
+}
+
+function unpause() {
+    for (let enemy in allEnemies) {
+        enemy.pause = false;
+    }
+    player.pause = false;
+    isPaused = false;
+}
 
 // Enemies that the player must avoid
 class Enemy {
@@ -9,6 +35,9 @@ class Enemy {
         this.x = 0 - tileX;
         this.y = (tileY * initialY) - (tileY / 2);
         this.speed = speed;
+
+        // Game stats
+        this.pause = false;
 
         // Assign image to enemy sprite
         this.sprite = 'images/enemy-bug.png';
@@ -21,8 +50,12 @@ class Enemy {
 
     // Update enemy position as location values change
     update(dt) {
-        if (this.x < tileX * 5) {this.x += tileX * 2 * this.speed * dt;}
-        else {this.x = 0 - tileX;}
+        if (!isPaused) {
+            if (this.x < tileX * 5) {
+                this.x += tileX * 2 * this.speed * dt;
+            }
+            else {this.x = 0 - tileX;}
+        }
     }
 }
 
@@ -37,6 +70,7 @@ class Hero {
 
         // Game stats
         this.health = 1;
+        this.pause = false;
 
         // Assign image to hero sprite
         this.sprite = "images/char-boy.png";
@@ -44,10 +78,17 @@ class Hero {
 
     // Change sprite location based on player inputs
     handleInput(inputKey) {
-        if (inputKey === "left" && this.x > 0) {this.x -= tileX;}
-        else if (inputKey === "up" && this.y > 0) {this.y -= tileY;}
-        else if (inputKey === "right" && this.x < (tileX * 4)) {this.x += tileX;}
-        else if (inputKey === "down" && this.y < this.initialY) {this.y += tileY;}
+        if (!this.pause) {
+            if (inputKey === "left" && this.x > 0) {
+                this.x -= tileX;
+            } else if (inputKey === "up" && this.y > 0) {
+                this.y -= tileY;
+            } else if (inputKey === "right" && this.x < (tileX * 4)) {
+                this.x += tileX;
+            } else if (inputKey === "down" && this.y < this.initialY) {
+                this.y += tileY;
+            }
+        }
     }
 
     // Draw player sprite on screen
@@ -84,6 +125,8 @@ const player = new Hero();
 // Listen for key presses and sends them to .handleInput()
 document.addEventListener('keyup', function(e) {
     var allowedKeys = {
+        27: "pause",
+        32: "pause",
         37: 'left',
         38: 'up',
         39: 'right',
@@ -94,5 +137,6 @@ document.addEventListener('keyup', function(e) {
         87: "up"
     };
 
+    pauseToggle(allowedKeys[e.keyCode]);
     player.handleInput(allowedKeys[e.keyCode]);
 });
