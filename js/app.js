@@ -1,9 +1,23 @@
-// Global measurement variables
-const tileX = 101;
-const tileY = 83;
+// Global variables
+let allowedKeys = {
+    27: "pause",
+    32: "pause",
+    37: "left",
+    38: "up",
+    39: "right",
+    40: "down",
+    65: "left",
+    68: "right",
+    83: "down",
+    87: "up"
+};
+
 let isPaused = false;
 
-// Global pause functions
+const tileX = 101;
+const tileY = 83;
+
+// Global functions
 function pause() {
     for (let enemy in allEnemies) {
         enemy.pause = true;
@@ -12,12 +26,33 @@ function pause() {
     isPaused = true;
 }
 
-function pauseToggle(inputKey) {
+function togglePause(inputKey) {
     if (inputKey === "pause" && !isPaused) {
         pause();
     } else if (inputKey === "pause" && isPaused) {
         unpause();
     } 
+}
+
+function togglePlayerControl() {
+    if (player.hasControl) {
+        allowedKeys = {};
+        player.hasControl = false;
+    } else if (!player.hasControl) {
+        allowedKeys = {
+            27: "pause",
+            32: "pause",
+            37: "left",
+            38: "up",
+            39: "right",
+            40: "down",
+            65: "left",
+            68: "right",
+            83: "down",
+            87: "up"
+        };
+        player.hasControl = true;
+    }
 }
 
 function unpause() {
@@ -32,8 +67,9 @@ function unpause() {
 class Enemy {
     constructor(initialY = 1, speed = 1) {
         // Location on screen
+        this.initialY = (tileY * initialY) - (tileY / 2);
         this.x = 0 - tileX;
-        this.y = (tileY * initialY) - (tileY / 2);
+        this.y = this.initialY;
         this.speed = speed;
 
         // Game stats
@@ -63,6 +99,8 @@ class Enemy {
 class Hero {
     constructor() {
         // Location on screen
+        this.hasControl = true;
+        this.hasWon = false;
         this.initialX = tileX * 2;
         this.initialY = (tileY * 5) - (tileY / 2);
         this.x = this.initialX;
@@ -96,6 +134,12 @@ class Hero {
         ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
     }
 
+    // Reset player to initial position
+    reset() {
+        this.x = this.initialX;
+        this.y = this.initialY;
+    }
+
     // Update player collision and status checks
     update(dt) {
         // Check enemy collision
@@ -103,13 +147,38 @@ class Hero {
             if (enemy.y === this.y &&
             (enemy.x + (tileX / 2)) > this.x &&
             (this.x + (tileX / 2)) > enemy.x) {
-                this.x = this.initialX;
-                this.y = this.initialY;
+                // Freeze frame on victory
+                togglePlayerControl();
+                pause();
+
+                // Resume at start after sufficient suspense
+                setTimeout(function() {
+                    player.reset();
+                    unpause();
+                    togglePlayerControl();
+                }, 500);
             }
+        }
+
+        // Check victory condition
+        if (this.y === 0 - (tileY / 2) && !this.hasWon) {
+            this.hasWon = true;
+
+            // Freeze frame on victory
+            togglePlayerControl();
+            pause();
+
+            // Resume at start after sufficient suspense
+            setTimeout(function() {
+                player.reset();
+                unpause();
+                togglePlayerControl();
+            }, 1000);
+
+            this.hasWon = false;
         }
     }
 }
-
 
 // Instantiate actors
 const allEnemies = [];
@@ -120,23 +189,8 @@ allEnemies.push(enemy1, enemy2, enemy3);
 
 const player = new Hero();
 
-
-
 // Listen for key presses and sends them to .handleInput()
 document.addEventListener('keyup', function(e) {
-    var allowedKeys = {
-        27: "pause",
-        32: "pause",
-        37: 'left',
-        38: 'up',
-        39: 'right',
-        40: 'down',
-        65: "left",
-        68: "right",
-        83: "down",
-        87: "up"
-    };
-
-    pauseToggle(allowedKeys[e.keyCode]);
+    togglePause(allowedKeys[e.keyCode]);
     player.handleInput(allowedKeys[e.keyCode]);
 });
