@@ -1,0 +1,21 @@
+:root {
+	/* Color Palette */
+	--background: #555;
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	align-items: center;
+	background: var(--background);
+	display: flex;
+	height: 100vh;
+	justify-content: center;
+	max-height: 100%;
+	max-width: 100%;
+	width: 100vw;
+}
