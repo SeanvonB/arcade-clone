@@ -4,7 +4,7 @@
 // on the screen, and then calls the update and render methods on objects. This
 // engine also makes the canvas context object (`ctx`) globally available.
 
-var Engine = (function (global) {
+const Engine = (function (global) {
 	const doc = global.document,
 		win = global.window,
 		canvas = doc.createElement("canvas"),
@@ -16,7 +16,6 @@ var Engine = (function (global) {
 	doc.body.appendChild(canvas);
 
 	function init() {
-		reset();
 		lastTime = Date.now();
 		main();
 	}
@@ -85,11 +84,6 @@ var Engine = (function (global) {
 			enemy.render();
 		});
 		player.render();
-	}
-
-	// TODO: Create proper reset function
-	function reset() {
-		// WRITE ME PLEASE
 	}
 
 	// Load all resources into cache then callback `init` to start

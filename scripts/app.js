@@ -32,14 +32,29 @@ class Enemy {
 		ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
 	}
 
-	// Increment location per time step until resetting
+	reset() {
+		this.x = this.initialX;
+		this.y = this.initialY;
+	}
+
 	update(dt) {
+		// Increment location per time step until resetting
 		if (!isPaused) {
 			if (this.x < tileX * 5) {
 				this.x += tileX * 2 * this.speed * dt;
 			} else {
 				this.x = 0 - tileX;
 			}
+		}
+
+		// Check for player collision
+		if (
+			player.y === this.y &&
+			player.x + tileX / 2 > this.x &&
+			this.x + tileX / 2 > player.x
+		) {
+			// TODO: Add a defeat modal or screen effect
+			resetGame();
 		}
 	}
 }
@@ -86,36 +101,12 @@ class Hero {
 	// Increment location per time step and check collision
 	// TODO: Smooth hero animation with `dt`
 	update(dt) {
-		// Check enemy collision
-		for (let enemy of allEnemies) {
-			if (
-				enemy.y === this.y &&
-				enemy.x + tileX / 2 > this.x &&
-				this.x + tileX / 2 > enemy.x
-			) {
-				// TODO: Create proper reset function
-				togglePlayerControl();
-				pause();
-				setTimeout(function () {
-					player.reset();
-					unpause();
-					togglePlayerControl();
-				}, 500);
-			}
-		}
-
 		// Check victory condition
 		if (this.y === 0 - tileY / 2 && !this.hasWon) {
 			this.hasWon = true;
 
-			// TODO: Create proper reset function
-			togglePlayerControl();
-			pause();
-			setTimeout(function () {
-				player.reset();
-				unpause();
-				togglePlayerControl();
-			}, 1000);
+			// TODO: Add a victory modal
+			resetGame();
 			this.hasWon = false;
 		}
 	}
@@ -127,6 +118,17 @@ function pause() {
 	}
 	player.pause = true;
 	isPaused = true;
+}
+
+function resetGame() {
+	togglePlayerControl();
+	pause();
+	allEnemies.forEach(function (enemy) {
+		enemy.reset();
+	});
+	player.reset();
+	unpause();
+	togglePlayerControl();
 }
 
 function togglePause(inputKey) {
