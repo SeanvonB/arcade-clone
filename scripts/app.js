@@ -1,6 +1,6 @@
 // Globals
-const tileX = 101;
-const tileY = 83;
+const tileX = 100;
+const tileY = 80;
 keybindings = {
 	" ": "pause",
 	Escape: "pause",

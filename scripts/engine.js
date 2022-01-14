@@ -11,8 +11,8 @@ const Engine = (function (global) {
 		ctx = canvas.getContext("2d");
 	let lastTime;
 
-	canvas.height = 606;
-	canvas.width = 505;
+	canvas.height = 651;
+	canvas.width = 501;
 	doc.body.appendChild(canvas);
 
 	function init() {
@@ -54,8 +54,9 @@ const Engine = (function (global) {
 				"images/stone-block.png", // Row 4: Stone
 				"images/grass-block.png", // Row 5: Grass
 				"images/grass-block.png", // Row 6: Grass
+				"images/grass-block.png", // Row 7: Grass
 			],
-			numRows = 6,
+			numRows = 7,
 			numCols = 5,
 			row,
 			col;
@@ -69,8 +70,8 @@ const Engine = (function (global) {
 				// Perameters: image, starting x, and starting y
 				ctx.drawImage(
 					Resources.get(rowImages[row]),
-					col * 101,
-					row * 83
+					col * 100,
+					row * 80
 				);
 			}
 		}
