@@ -75,6 +75,8 @@ class Hero {
 		this.sprite = "images/char-boy.png";
 	}
 
+	// NOTE: Smooth movement looked nicer but felt worse to play; this snappy
+	// movement feels more precise and responsive.
 	handleInput(inputKey) {
 		if (!this.pause) {
 			if (inputKey === "left" && this.x > 0) {
@@ -99,7 +101,6 @@ class Hero {
 	}
 
 	// Increment location per time step and check collision
-	// TODO: Smooth hero animation with `dt`
 	update(dt) {
 		// Check victory condition
 		if (this.y === 0 - tileY / 2 && !this.hasWon) {
