@@ -1,4 +1,11 @@
 // Globals
+const chars = [
+	"images/char-boy.png",
+	"images/char-cat-girl.png",
+	"images/char-horn-girl.png",
+	"images/char-pink-girl.png",
+	"images/char-princess-girl.png",
+];
 const tileX = 100;
 const tileY = 80;
 keybindings = {
@@ -13,7 +20,8 @@ keybindings = {
 	d: "right",
 	ArrowRight: "right",
 };
-let isPaused = false;
+let currentChar = 0;
+isPaused = false;
 
 class Enemy {
 	constructor(initialY = 1, speed = 1) {
@@ -72,7 +80,7 @@ class Hero {
 		// Game state
 		this.health = 1;
 		this.pause = false;
-		this.sprite = "images/char-boy.png";
+		this.sprite = chars[currentChar];
 	}
 
 	// NOTE: Smooth movement looked nicer but felt worse to play; this snappy
@@ -96,6 +104,7 @@ class Hero {
 	}
 
 	reset() {
+		this.sprite = chars[currentChar];
 		this.x = this.initialX;
 		this.y = this.initialY;
 	}
@@ -127,6 +136,11 @@ function resetGame() {
 	allEnemies.forEach(function (enemy) {
 		enemy.reset();
 	});
+	if (currentChar >= 4) {
+		currentChar = 0;
+	} else {
+		currentChar++;
+	}
 	player.reset();
 	unpause();
 	togglePlayerControl();
