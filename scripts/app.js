@@ -22,19 +22,18 @@ let keybindings = {
 	ArrowRight: "right",
 };
 let currentChar = 0;
+let hasControl = true;
+let hasWon = false;
 let isPaused = false;
 
 class Enemy {
-	constructor(initialY = 1, speed = 1) {
-		// Location
-		this.initialX = -2 * tileX;
+	constructor(initialY = 1, speed = 100) {
+		this.initialX = -1 * tileX;
 		this.initialY = tileY * initialY - tileY / 2;
+		this.speed = speed;
+		this.sprite = "images/enemy-bug.png";
 		this.x = this.initialX;
 		this.y = this.initialY;
-		this.speed = speed;
-
-		// Game state
-		this.sprite = "images/enemy-bug.png";
 	}
 
 	render() {
@@ -50,7 +49,7 @@ class Enemy {
 		// Increment location per time step until resetting
 		if (!isPaused) {
 			if (this.x < tileX * 5) {
-				this.x += tileX * 2 * this.speed * dt;
+				this.x += this.speed * dt;
 			} else {
 				this.x = this.initialX;
 			}
@@ -70,15 +69,10 @@ class Enemy {
 
 class Hero {
 	constructor() {
-		// Location
-		this.hasControl = true;
-		this.hasWon = false;
 		this.initialX = tileX * 2;
-		this.initialY = tileY * 5 - tileY / 2;
+		this.initialY = tileY * 6 - tileY / 2;
 		this.x = this.initialX;
 		this.y = this.initialY;
-
-		// Game state
 		this.health = 1;
 		this.sprite = chars[currentChar];
 	}
@@ -113,11 +107,11 @@ class Hero {
 	update(dt) {
 		// Check victory condition
 		if (this.y === 0 - tileY / 2 && !this.hasWon) {
-			this.hasWon = true;
+			hasWon = true;
 
 			// TODO: Add a victory modal
 			resetGame();
-			this.hasWon = false;
+			hasWon = false;
 		}
 	}
 }
@@ -136,7 +130,7 @@ function resetGame() {
 	}
 
 	// Add screen effect and text
-	if (player.hasWon) {
+	if (hasWon) {
 		overlay.textContent = "Victory";
 		ctx.filter = "sepia()";
 		overlay.style.color = "#eef";
@@ -151,7 +145,7 @@ function resetGame() {
 			overlay.style.fontFamily =
 				"Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif";
 		} else {
-			ctx.filter = "brightness(0)";
+			ctx.filter = "brightness(25%)";
 			overlay.style.color = "#f30";
 			overlay.style.fontFamily =
 				"Garamond, Georgia, 'Times New Roman', Times, serif";
@@ -181,10 +175,10 @@ function togglePause(inputKey) {
 }
 
 function togglePlayerControl() {
-	if (player.hasControl) {
+	if (hasControl) {
 		keybindings = {};
-		player.hasControl = false;
-	} else if (!player.hasControl) {
+		hasControl = false;
+	} else if (!hasControl) {
 		keybindings = {
 			" ": "pause",
 			Escape: "pause",
@@ -197,7 +191,7 @@ function togglePlayerControl() {
 			d: "right",
 			ArrowRight: "right",
 		};
-		player.hasControl = true;
+		hasControl = true;
 	}
 }
 
@@ -213,8 +207,9 @@ document.addEventListener("keydown", function (e) {
 
 // Initial state
 const allEnemies = [];
-const enemy1 = new Enemy(1, 2);
-const enemy2 = new Enemy(2, 3);
-const enemy3 = new Enemy(3, 1);
-allEnemies.push(enemy1, enemy2, enemy3);
+const enemy1 = new Enemy(1, 400);
+const enemy2 = new Enemy(2, 500);
+const enemy3 = new Enemy(4, 200);
+const enemy4 = new Enemy(5, 300);
+allEnemies.push(enemy1, enemy2, enemy3, enemy4);
 const player = new Hero();

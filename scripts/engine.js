@@ -48,13 +48,13 @@ const Engine = (function (global) {
 	function render() {
 		// Array of image URLs representing game rows from top to bottom
 		let rowImages = [
-				"images/water-block.png", // Row 1: Water
+				"images/grass-block.png", // Row 1: Finish
 				"images/stone-block.png", // Row 2: Stone
 				"images/stone-block.png", // Row 3: Stone
-				"images/stone-block.png", // Row 4: Stone
-				"images/grass-block.png", // Row 5: Grass
-				"images/grass-block.png", // Row 6: Grass
-				"images/grass-block.png", // Row 7: Grass
+				"images/grass-block.png", // Row 4: Grass
+				"images/stone-block.png", // Row 5: Stone
+				"images/stone-block.png", // Row 6: Stone
+				"images/grass-block.png", // Row 7: Start
 			],
 			numRows = 7,
 			numCols = 5,
@@ -64,17 +64,39 @@ const Engine = (function (global) {
 		// Clear current canvas before drawing next one
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-		// Assemble map as specified above
+		// Draw map as specified above
 		for (row = 0; row < numRows; row++) {
-			for (col = 0; col < numCols; col++) {
-				// Perameters: image, starting x, and starting y
-				ctx.drawImage(
-					Resources.get(rowImages[row]),
-					col * 100,
-					row * 80
-				);
+			if (row > 0 && row < 6) {
+				for (col = 0; col < numCols; col++) {
+					ctx.drawImage(
+						Resources.get(rowImages[row]),
+						col * 100,
+						row * 80
+					);
+				}
+			} else {
+				// Create irregular rows
+				for (col = 0; col < numCols; col++) {
+					if (col === 2) {
+						ctx.drawImage(
+							Resources.get("images/grass-block.png"),
+							col * 100,
+							row * 80
+						);
+					} else {
+						ctx.drawImage(
+							Resources.get("images/water-block.png"),
+							col * 100,
+							row * 80
+						);
+					}
+				}
 			}
 		}
+
+		// Draw fixed objects
+		ctx.drawImage(Resources.get("images/rock.png"), 200, 200);
+		ctx.drawImage(Resources.get("images/selector.png"), 200, -40);
 
 		renderEntities();
 	}
@@ -98,6 +120,8 @@ const Engine = (function (global) {
 		"images/char-horn-girl.png",
 		"images/char-pink-girl.png",
 		"images/char-princess-girl.png",
+		"images/rock.png",
+		"images/selector.png",
 	]);
 	Resources.onReady(init);
 
