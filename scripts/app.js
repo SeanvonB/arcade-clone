@@ -8,7 +8,7 @@ const chars = [
 ];
 const tileX = 100;
 const tileY = 80;
-keybindings = {
+let keybindings = {
 	" ": "pause",
 	Escape: "pause",
 	w: "up",
@@ -21,18 +21,18 @@ keybindings = {
 	ArrowRight: "right",
 };
 let currentChar = 0;
-isPaused = false;
+let isPaused = false;
 
 class Enemy {
 	constructor(initialY = 1, speed = 1) {
 		// Location
+		this.initialX = -2 * tileX;
 		this.initialY = tileY * initialY - tileY / 2;
-		this.x = 0 - tileX;
+		this.x = this.initialX;
 		this.y = this.initialY;
 		this.speed = speed;
 
 		// Game state
-		this.pause = false;
 		this.sprite = "images/enemy-bug.png";
 	}
 
@@ -51,7 +51,7 @@ class Enemy {
 			if (this.x < tileX * 5) {
 				this.x += tileX * 2 * this.speed * dt;
 			} else {
-				this.x = 0 - tileX;
+				this.x = this.initialX;
 			}
 		}
 
@@ -61,7 +61,6 @@ class Enemy {
 			player.x + tileX / 2 > this.x &&
 			this.x + tileX / 2 > player.x
 		) {
-			// TODO: Add a defeat modal or screen effect
 			resetGame();
 		}
 	}
@@ -79,14 +78,13 @@ class Hero {
 
 		// Game state
 		this.health = 1;
-		this.pause = false;
 		this.sprite = chars[currentChar];
 	}
 
 	// NOTE: Smooth movement looked nicer but felt worse to play; this snappy
 	// movement feels more precise and responsive.
 	handleInput(inputKey) {
-		if (!this.pause) {
+		if (!isPaused) {
 			if (inputKey === "left" && this.x > 0) {
 				this.x -= tileX;
 			} else if (inputKey === "up" && this.y > 0) {
@@ -123,27 +121,29 @@ class Hero {
 }
 
 function pause() {
-	for (let enemy in allEnemies) {
-		enemy.pause = true;
-	}
-	player.pause = true;
 	isPaused = true;
 }
 
 function resetGame() {
 	togglePlayerControl();
 	pause();
-	allEnemies.forEach(function (enemy) {
-		enemy.reset();
-	});
 	if (currentChar >= 4) {
 		currentChar = 0;
 	} else {
 		currentChar++;
 	}
-	player.reset();
-	unpause();
-	togglePlayerControl();
+
+	// Freeze frame for screen effect
+	ctx.filter = "grayscale()";
+	setTimeout(function () {
+		ctx.filter = "none";
+		player.reset();
+		allEnemies.forEach(function (enemy) {
+			enemy.reset();
+		});
+		unpause();
+		togglePlayerControl();
+	}, 500);
 }
 
 function togglePause(inputKey) {
@@ -176,10 +176,6 @@ function togglePlayerControl() {
 }
 
 function unpause() {
-	for (let enemy in allEnemies) {
-		enemy.pause = false;
-	}
-	player.pause = false;
 	isPaused = false;
 }
 
