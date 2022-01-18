@@ -6,6 +6,7 @@ const chars = [
 	"images/char-pink-girl.png",
 	"images/char-princess-girl.png",
 ];
+const overlay = document.querySelector(".overlay");
 const tileX = 100;
 const tileY = 80;
 let keybindings = {
@@ -57,6 +58,7 @@ class Enemy {
 
 		// Check for player collision
 		if (
+			!isPaused &&
 			player.y === this.y &&
 			player.x + tileX / 2 > this.x &&
 			this.x + tileX / 2 > player.x
@@ -133,17 +135,41 @@ function resetGame() {
 		currentChar++;
 	}
 
+	// Add screen effect and text
+	if (player.hasWon) {
+		overlay.textContent = "Victory";
+		ctx.filter = "sepia()";
+		overlay.style.color = "#eef";
+		overlay.style.fontFamily = "Verdana, Geneva, Tahoma, sans-serif";
+	} else {
+		overlay.textContent = ["WASTED", "YOU DIED"][
+			Math.floor(Math.random() * 2)
+		];
+		if (overlay.textContent === "WASTED") {
+			ctx.filter = "grayscale()";
+			overlay.style.color = "#933";
+			overlay.style.fontFamily =
+				"Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif";
+		} else {
+			ctx.filter = "brightness(0)";
+			overlay.style.color = "#f30";
+			overlay.style.fontFamily =
+				"Garamond, Georgia, 'Times New Roman', Times, serif";
+		}
+	}
+	overlay.classList.remove("hidden");
+
 	// Freeze frame for screen effect
-	ctx.filter = "grayscale()";
 	setTimeout(function () {
 		ctx.filter = "none";
+		overlay.classList.add("hidden");
 		player.reset();
 		allEnemies.forEach(function (enemy) {
 			enemy.reset();
 		});
 		unpause();
 		togglePlayerControl();
-	}, 500);
+	}, 1000);
 }
 
 function togglePause(inputKey) {
