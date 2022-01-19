@@ -3,8 +3,7 @@ const chars = [
 	"images/char-boy.png",
 	"images/char-cat-girl.png",
 	"images/char-horn-girl.png",
-	"images/char-pink-girl.png",
-	"images/char-princess-girl.png",
+	"images/char-princess.png",
 ];
 const overlay = document.querySelector(".overlay");
 const tileX = 100;
@@ -27,11 +26,17 @@ let hasWon = false;
 let isPaused = false;
 
 class Enemy {
-	constructor(initialY = 1, speed = 100) {
-		this.initialX = -1 * tileX;
+	constructor(initialY = 1, speed = 100, reverse = false) {
+		if (reverse) {
+			this.initialX = 5 * tileX;
+			this.sprite = "images/enemy-reverse.png";
+		} else {
+			this.initialX = -1 * tileX;
+			this.sprite = "images/enemy-bug.png";
+		}
 		this.initialY = tileY * initialY - tileY / 2;
+		this.reverse = reverse;
 		this.speed = speed;
-		this.sprite = "images/enemy-bug.png";
 		this.x = this.initialX;
 		this.y = this.initialY;
 	}
@@ -48,10 +53,18 @@ class Enemy {
 	update(dt) {
 		// Increment location per time step until resetting
 		if (!isPaused) {
-			if (this.x < tileX * 5) {
-				this.x += this.speed * dt;
-			} else {
-				this.x = this.initialX;
+			if (this.reverse) {
+				if (this.x > tileX * -1) {
+					this.x -= this.speed * dt;
+				} else {
+					this.x = this.initialX;
+				}
+			} else if (!this.reverse) {
+				if (this.x < tileX * 5) {
+					this.x += this.speed * dt;
+				} else {
+					this.x = this.initialX;
+				}
 			}
 		}
 	}
@@ -165,7 +178,7 @@ function pause() {
 function resetGame() {
 	togglePlayerControl();
 	pause();
-	if (currentChar >= 4) {
+	if (currentChar >= 3) {
 		currentChar = 0;
 	} else {
 		currentChar++;
@@ -265,9 +278,9 @@ document.addEventListener("keydown", function (e) {
 
 // Initial state
 const allEnemies = [];
-const enemy1 = new Enemy(1, 400);
+const enemy1 = new Enemy(1, 425, true);
 const enemy2 = new Enemy(2, 500);
-const enemy3 = new Enemy(4, 200);
-const enemy4 = new Enemy(5, 300);
+const enemy3 = new Enemy(4, 275, true);
+const enemy4 = new Enemy(5, 350);
 allEnemies.push(enemy1, enemy2, enemy3, enemy4);
 const player = new Hero();
