@@ -96,7 +96,7 @@ const Engine = (function (global) {
 
 		// Draw fixed objects
 		ctx.drawImage(Resources.get("images/rock.png"), 200, 200);
-		ctx.drawImage(Resources.get("images/selector.png"), 200, -40);
+		ctx.drawImage(Resources.get("images/star.png"), 200, -20);
 
 		renderEntities();
 	}
@@ -121,7 +121,7 @@ const Engine = (function (global) {
 		"images/char-pink-girl.png",
 		"images/char-princess-girl.png",
 		"images/rock.png",
-		"images/selector.png",
+		"images/star.png",
 	]);
 	Resources.onReady(init);
 

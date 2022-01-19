@@ -171,13 +171,29 @@ function resetGame() {
 		currentChar++;
 	}
 
-	// Add screen effect and text
+	// Victory
 	if (hasWon) {
 		overlay.textContent = "Victory";
 		ctx.filter = "sepia()";
 		overlay.style.color = "#eef";
 		overlay.style.fontFamily = "Verdana, Geneva, Tahoma, sans-serif";
-	} else {
+		overlay.classList.remove("hidden");
+		allEnemies.forEach(function (enemy) {
+			enemy.reset();
+		});
+
+		// Freeze frame, then reset
+		setTimeout(function () {
+			ctx.filter = "none";
+			overlay.classList.add("hidden");
+			player.reset();
+			unpause();
+			togglePlayerControl();
+		}, 1500);
+	}
+
+	// Defeat
+	else {
 		overlay.textContent = ["WASTED", "YOU DIED"][
 			Math.floor(Math.random() * 2)
 		];
@@ -192,20 +208,20 @@ function resetGame() {
 			overlay.style.fontFamily =
 				"Garamond, Georgia, 'Times New Roman', Times, serif";
 		}
-	}
-	overlay.classList.remove("hidden");
+		overlay.classList.remove("hidden");
 
-	// Freeze frame for screen effect
-	setTimeout(function () {
-		ctx.filter = "none";
-		overlay.classList.add("hidden");
-		player.reset();
-		allEnemies.forEach(function (enemy) {
-			enemy.reset();
-		});
-		unpause();
-		togglePlayerControl();
-	}, 1000);
+		// Freeze frame, then reset
+		setTimeout(function () {
+			ctx.filter = "none";
+			overlay.classList.add("hidden");
+			player.reset();
+			allEnemies.forEach(function (enemy) {
+				enemy.reset();
+			});
+			unpause();
+			togglePlayerControl();
+		}, 1000);
+	}
 }
 
 function togglePause(inputKey) {
