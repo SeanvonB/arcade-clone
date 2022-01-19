@@ -11,15 +11,15 @@ const tileX = 100;
 const tileY = 80;
 let keybindings = {
 	" ": "pause",
-	Escape: "pause",
-	w: "up",
-	ArrowUp: "up",
 	a: "left",
-	ArrowLeft: "left",
-	s: "down",
 	ArrowDown: "down",
-	d: "right",
+	ArrowLeft: "left",
 	ArrowRight: "right",
+	ArrowUp: "up",
+	d: "right",
+	Escape: "pause",
+	s: "down",
+	w: "up",
 };
 let currentChar = 0;
 let hasControl = true;
@@ -54,16 +54,6 @@ class Enemy {
 				this.x = this.initialX;
 			}
 		}
-
-		// Check for player collision
-		if (
-			!isPaused &&
-			player.y === this.y &&
-			player.x + tileX / 2 > this.x &&
-			this.x + tileX / 2 > player.x
-		) {
-			resetGame();
-		}
 	}
 }
 
@@ -80,16 +70,54 @@ class Hero {
 	// NOTE: Smooth movement looked nicer but felt worse to play; this snappy
 	// movement feels more precise and responsive.
 	handleInput(inputKey) {
-		if (!isPaused) {
-			if (inputKey === "left" && this.x > 0) {
-				this.x -= tileX;
-			} else if (inputKey === "up" && this.y > 0) {
-				this.y -= tileY;
-			} else if (inputKey === "right" && this.x < tileX * 4) {
-				this.x += tileX;
-			} else if (inputKey === "down" && this.y < this.initialY) {
-				this.y += tileY;
-			}
+		switch (inputKey) {
+			case "down":
+				if (
+					// Boundaries of screen and terrain
+					this.y === tileY * 6 - tileY / 2 ||
+					(this.x !== tileX * 2 && this.y == tileY * 5 - tileY / 2) ||
+					(this.x === tileX * 2 && this.y == tileY * 2 - tileY / 2)
+				) {
+					break;
+				} else {
+					this.y += tileY;
+					break;
+				}
+			case "left":
+				if (
+					this.x === 0 ||
+					(this.x === tileX * 2 && this.y == tileY * 6 - tileY / 2) ||
+					(this.x === tileX * 2 && this.y === 0 - tileY / 2) ||
+					(this.x === tileX * 3 && this.y === tileY * 3 - tileY / 2)
+				) {
+					break;
+				} else {
+					this.x -= tileX;
+					break;
+				}
+			case "right":
+				if (
+					this.x === tileX * 4 ||
+					(this.x === tileX * 2 && this.y == tileY * 6 - tileY / 2) ||
+					(this.x === tileX * 2 && this.y === 0 - tileY / 2) ||
+					(this.x === tileX * 1 && this.y === tileY * 3 - tileY / 2)
+				) {
+					break;
+				} else {
+					this.x += tileX;
+					break;
+				}
+			case "up":
+				if (
+					this.y === 0 - tileY ||
+					(this.x !== tileX * 2 && this.y == tileY * 1 - tileY / 2) ||
+					(this.x === tileX * 2 && this.y == tileY * 4 - tileY / 2)
+				) {
+					break;
+				} else {
+					this.y -= tileY;
+					break;
+				}
 		}
 	}
 
@@ -103,13 +131,27 @@ class Hero {
 		this.y = this.initialY;
 	}
 
-	// Increment location per time step and check collision
 	update(dt) {
-		// Check victory condition
+		// Check collision
+		if (!isPaused) {
+			allEnemies.forEach(function (enemy) {
+				if (
+					player.y === enemy.y &&
+					player.x + tileX / 2 > enemy.x &&
+					enemy.x + tileX / 2 > player.x
+				) {
+					player.health -= 1;
+				}
+			});
+		}
+		if (player.health <= 0) {
+			player.health = 1;
+			resetGame();
+		}
+
+		// Check win condition
 		if (this.y === 0 - tileY / 2 && !this.hasWon) {
 			hasWon = true;
-
-			// TODO: Add a victory modal
 			resetGame();
 			hasWon = false;
 		}
@@ -181,15 +223,15 @@ function togglePlayerControl() {
 	} else if (!hasControl) {
 		keybindings = {
 			" ": "pause",
-			Escape: "pause",
-			w: "up",
-			ArrowUp: "up",
 			a: "left",
-			ArrowLeft: "left",
-			s: "down",
 			ArrowDown: "down",
-			d: "right",
+			ArrowLeft: "left",
 			ArrowRight: "right",
+			ArrowUp: "up",
+			d: "right",
+			Escape: "pause",
+			s: "down",
+			w: "up",
 		};
 		hasControl = true;
 	}
