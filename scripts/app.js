@@ -5,6 +5,7 @@ const chars = [
 	"images/char-horn-girl.png",
 	"images/char-princess.png",
 ];
+const game = document.querySelector(".game");
 const overlay = document.querySelector(".overlay");
 const tileX = 100;
 const tileY = 80;
@@ -80,57 +81,111 @@ class Hero {
 		this.sprite = chars[currentChar];
 	}
 
-	// NOTE: Smooth movement looked nicer but felt worse to play; this snappy
+	// NOTE: Smooth movement looked nicer but felt much worse to play; snappy
 	// movement feels more precise and responsive.
-	handleInput(inputKey) {
-		switch (inputKey) {
-			case "down":
+	handleInput(e) {
+		if (hasControl && !isPaused) {
+			let input;
+			if (keybindings[e.key]) {
+				input = keybindings[e.key];
+			} else if (e.type === "click") {
+				// Normalize dimensions of responsive canvas to base values
+				let bounds = game.getBoundingClientRect();
+				let clickX = (e.clientX - bounds.left) * (500 / bounds.width);
+				let clickY = (e.clientY - bounds.top) * (651 / bounds.height);
+
+				// Apply touch target criteria
 				if (
-					// Boundaries of screen and terrain
-					this.y === tileY * 6 - tileY / 2 ||
-					(this.x !== tileX * 2 && this.y == tileY * 5 - tileY / 2) ||
-					(this.x === tileX * 2 && this.y == tileY * 2 - tileY / 2)
+					clickX > player.x &&
+					clickX < player.x + tileX &&
+					clickY > player.y + tileY * 2 &&
+					clickY < player.y + tileY * 4
 				) {
-					break;
-				} else {
-					this.y += tileY;
-					break;
-				}
-			case "left":
-				if (
-					this.x === 0 ||
-					(this.x === tileX * 2 && this.y == tileY * 6 - tileY / 2) ||
-					(this.x === tileX * 2 && this.y === 0 - tileY / 2) ||
-					(this.x === tileX * 3 && this.y === tileY * 3 - tileY / 2)
+					input = "down";
+				} else if (
+					clickX > player.x - tileX * 2 &&
+					clickX < player.x &&
+					clickY > player.y + tileY &&
+					clickY < player.y + tileY * 2
 				) {
-					break;
-				} else {
-					this.x -= tileX;
-					break;
-				}
-			case "right":
-				if (
-					this.x === tileX * 4 ||
-					(this.x === tileX * 2 && this.y == tileY * 6 - tileY / 2) ||
-					(this.x === tileX * 2 && this.y === 0 - tileY / 2) ||
-					(this.x === tileX * 1 && this.y === tileY * 3 - tileY / 2)
+					input = "left";
+				} else if (
+					clickX > player.x + tileX &&
+					clickX < player.x + tileX * 3 &&
+					clickY > player.y + tileY &&
+					clickY < player.y + tileY * 2
 				) {
-					break;
-				} else {
-					this.x += tileX;
-					break;
-				}
-			case "up":
-				if (
-					this.y === 0 - tileY ||
-					(this.x !== tileX * 2 && this.y == tileY * 1 - tileY / 2) ||
-					(this.x === tileX * 2 && this.y == tileY * 4 - tileY / 2)
+					input = "right";
+				} else if (
+					clickX > player.x &&
+					clickX < player.x + tileX &&
+					clickY > player.y - tileY &&
+					clickY < player.y + tileY
 				) {
-					break;
-				} else {
-					this.y -= tileY;
-					break;
+					input = "up";
 				}
+			}
+
+			switch (input) {
+				case "down":
+					if (
+						// Top boundaries of screen and terrain
+						this.y === tileY * 6 - tileY / 2 ||
+						(this.x !== tileX * 2 &&
+							this.y == tileY * 5 - tileY / 2) ||
+						(this.x === tileX * 2 &&
+							this.y == tileY * 2 - tileY / 2)
+					) {
+						break;
+					} else {
+						this.y += tileY;
+						break;
+					}
+				case "left":
+					if (
+						// Right boundaries of screen and terrain
+						this.x === 0 ||
+						(this.x === tileX * 2 &&
+							this.y == tileY * 6 - tileY / 2) ||
+						(this.x === tileX * 2 && this.y === 0 - tileY / 2) ||
+						(this.x === tileX * 3 &&
+							this.y === tileY * 3 - tileY / 2)
+					) {
+						break;
+					} else {
+						this.x -= tileX;
+						break;
+					}
+				case "right":
+					if (
+						// Left boundaries of screen and terrain
+						this.x === tileX * 4 ||
+						(this.x === tileX * 2 &&
+							this.y == tileY * 6 - tileY / 2) ||
+						(this.x === tileX * 2 && this.y === 0 - tileY / 2) ||
+						(this.x === tileX * 1 &&
+							this.y === tileY * 3 - tileY / 2)
+					) {
+						break;
+					} else {
+						this.x += tileX;
+						break;
+					}
+				case "up":
+					if (
+						// Bottom boundaries of screen and terrain
+						this.y === 0 - tileY ||
+						(this.x !== tileX * 2 &&
+							this.y == tileY * 1 - tileY / 2) ||
+						(this.x === tileX * 2 &&
+							this.y == tileY * 4 - tileY / 2)
+					) {
+						break;
+					} else {
+						this.y -= tileY;
+						break;
+					}
+			}
 		}
 	}
 
@@ -178,11 +233,6 @@ function pause() {
 function resetGame() {
 	togglePlayerControl();
 	pause();
-	if (currentChar >= 3) {
-		currentChar = 0;
-	} else {
-		currentChar++;
-	}
 
 	// Victory
 	if (hasWon) {
@@ -199,6 +249,7 @@ function resetGame() {
 		setTimeout(function () {
 			ctx.filter = "none";
 			overlay.classList.add("hidden");
+			currentChar = 0;
 			player.reset();
 			unpause();
 			togglePlayerControl();
@@ -206,13 +257,13 @@ function resetGame() {
 	}
 
 	// Defeat
-	else {
+	else if (!hasWon) {
 		overlay.textContent = ["WASTED", "YOU DIED"][
 			Math.floor(Math.random() * 2)
 		];
 		if (overlay.textContent === "WASTED") {
 			ctx.filter = "grayscale()";
-			overlay.style.color = "#933";
+			overlay.style.color = "#f33";
 			overlay.style.fontFamily =
 				"Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif";
 		} else {
@@ -222,6 +273,11 @@ function resetGame() {
 				"Garamond, Georgia, 'Times New Roman', Times, serif";
 		}
 		overlay.classList.remove("hidden");
+		if (currentChar >= 3) {
+			currentChar = 0;
+		} else {
+			currentChar++;
+		}
 
 		// Freeze frame, then reset
 		setTimeout(function () {
@@ -237,31 +293,18 @@ function resetGame() {
 	}
 }
 
-function togglePause(inputKey) {
-	if (inputKey === "pause" && !isPaused) {
+function togglePause(e) {
+	if (keybindings[e.key] === "pause" && hasControl && !isPaused) {
 		pause();
-	} else if (inputKey === "pause" && isPaused) {
+	} else if (keybindings[e.key] === "pause" && hasControl && isPaused) {
 		unpause();
 	}
 }
 
 function togglePlayerControl() {
 	if (hasControl) {
-		keybindings = {};
 		hasControl = false;
 	} else if (!hasControl) {
-		keybindings = {
-			" ": "pause",
-			a: "left",
-			ArrowDown: "down",
-			ArrowLeft: "left",
-			ArrowRight: "right",
-			ArrowUp: "up",
-			d: "right",
-			Escape: "pause",
-			s: "down",
-			w: "up",
-		};
 		hasControl = true;
 	}
 }
@@ -272,8 +315,11 @@ function unpause() {
 
 // AddEventListeners
 document.addEventListener("keydown", function (e) {
-	togglePause(keybindings[e.key]);
-	player.handleInput(keybindings[e.key]);
+	togglePause(e);
+	player.handleInput(e);
+});
+document.addEventListener("click", function (e) {
+	player.handleInput(e);
 });
 
 // Initial state

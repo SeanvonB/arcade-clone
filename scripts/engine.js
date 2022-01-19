@@ -5,15 +5,14 @@
 // engine also makes the canvas context object (`ctx`) globally available.
 
 const Engine = (function (global) {
-	const doc = global.document,
-		win = global.window,
-		canvas = doc.createElement("canvas"),
-		ctx = canvas.getContext("2d");
+	const canvas = document.createElement("canvas");
+	const ctx = canvas.getContext("2d");
+	const game = document.querySelector(".game");
 	let lastTime;
 
 	canvas.height = 651;
-	canvas.width = 501;
-	doc.body.appendChild(canvas);
+	canvas.width = 500;
+	game.appendChild(canvas);
 
 	function init() {
 		lastTime = Date.now();
@@ -33,7 +32,7 @@ const Engine = (function (global) {
 		lastTime = now;
 
 		// Recall this function when browser is ready for next frame
-		win.requestAnimationFrame(main);
+		global.window.requestAnimationFrame(main);
 	}
 
 	// Call `update` functions on ALL game objects
