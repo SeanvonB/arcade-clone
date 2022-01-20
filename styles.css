@@ -78,7 +78,7 @@ footer {
 	);
 	cursor: default;
 	display: flex;
-	font-size: 10vw;
+	font-size: min(10vw, 96px);
 	font-weight: bold;
 	justify-content: center;
 	margin: -32px 0 32px;
