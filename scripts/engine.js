@@ -47,13 +47,13 @@ const Engine = (function (global) {
 	function render() {
 		// Array of image URLs representing game rows from top to bottom
 		let rowImages = [
-				"images/grass-block.png", // Row 1: Finish
+				"images/water-block.png", // Row 1: Finish
 				"images/stone-block.png", // Row 2: Stone
 				"images/stone-block.png", // Row 3: Stone
 				"images/grass-block.png", // Row 4: Grass
 				"images/stone-block.png", // Row 5: Stone
 				"images/stone-block.png", // Row 6: Stone
-				"images/grass-block.png", // Row 7: Start
+				"images/water-block.png", // Row 7: Start
 			],
 			numRows = 7,
 			numCols = 5,
@@ -110,17 +110,17 @@ const Engine = (function (global) {
 
 	// Load all resources into cache then callback `init` to start
 	Resources.load([
-		"images/stone-block.png",
-		"images/water-block.png",
-		"images/grass-block.png",
-		"images/enemy-bug.png",
-		"images/enemy-reverse.png",
 		"images/char-boy.png",
 		"images/char-cat-girl.png",
 		"images/char-horn-girl.png",
 		"images/char-princess.png",
+		"images/enemy-bug.png",
+		"images/enemy-reverse.png",
+		"images/grass-block.png",
 		"images/rock.png",
 		"images/star.png",
+		"images/stone-block.png",
+		"images/water-block.png",
 	]);
 	Resources.onReady(init);
 
